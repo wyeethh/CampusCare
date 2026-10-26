@@ -1,0 +1,70 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+
+  int counter = 0;
+  int taskCounter = 0;
+  List<bool> checked = [];
+  List<String> alltask = [];
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text("Flutter"),
+          centerTitle: true,
+          backgroundColor: Colors.blue,
+          foregroundColor: Colors.white,
+        ),
+        body: ListView(
+          children: [
+            Row(
+              children: [
+                Text("To do List: $counter", style: TextStyle(fontSize: 20)),
+              ],
+            ),
+
+            for(int i = 0; i < alltask.length; i++)
+            CheckboxListTile(
+              title: Text(alltask[i]),
+              value: checked[i],
+              onChanged: (value) {
+                setState(() {
+                  alltask.removeAt(i);
+                  checked.removeAt(i);
+                  counter--;
+                });
+              },
+            ),
+          ],
+        ),
+
+
+        floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.add),
+          onPressed: (){
+            setState(() {
+              taskCounter++;
+              counter++;
+
+              alltask.add("Task $taskCounter");
+              checked.add(false);
+            });
+          },
+        ),
+      ),
+    );
+  }
+}

@@ -1,0 +1,505 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primarySwatch: Colors.indigo,
+        scaffoldBackgroundColor: const Color(0xFFF5F7FB),
+      ),
+      home: const HomePage(),
+    );
+  }
+}
+
+class Schedule {
+  final String subject;
+  final String time;
+  final String professor;
+  final String room;
+
+  Schedule({
+    required this.subject,
+    required this.time,
+    required this.professor,
+    required this.room,
+  });
+}
+
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  String? selectedDay;
+
+  final Map<String, List<Schedule>> schedules = {
+    "Monday": [],
+    "Tuesday": [],
+    "Wednesday": [],
+    "Thursday": [],
+    "Friday": [],
+  };
+
+  void _addSchedule() {
+    if (selectedDay == null) {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Please select a day first"),
+        ),
+      );
+      return;
+    }
+
+    final subjectController = TextEditingController();
+    final timeController = TextEditingController();
+    final professorController = TextEditingController();
+    final roomController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFFF8F3FA),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(28),
+          ),
+          title: const Text(
+            "Add New Schedule",
+            style: TextStyle(
+              fontSize: 27,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+          content: SingleChildScrollView(
+            child: Form(
+              key: formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextFormField(
+                    controller: subjectController,
+                    decoration: _inputDecoration(
+                      Icons.subject,
+                      "Subject Name",
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "Subject Name is required";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: timeController,
+                    decoration: _inputDecoration(
+                      Icons.access_time,
+                      "Time",
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "Time is required";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: professorController,
+                    decoration: _inputDecoration(
+                      Icons.person,
+                      "Professor Name",
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "Professor Name is required";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: roomController,
+                    decoration: _inputDecoration(
+                      Icons.location_on,
+                      "Room",
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "Room is required";
+                      }
+                      return null;
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+              },
+              child: const Text(
+                "Cancel",
+                style: TextStyle(
+                  color: Colors.indigo,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.indigo,
+                elevation: 2,
+              ),
+              onPressed: () {
+                if (!formKey.currentState!.validate()) {
+                  return;
+                }
+
+                setState(() {
+                  schedules[selectedDay!]!.add(
+                    Schedule(
+                      subject: subjectController.text.trim(),
+                      time: timeController.text.trim(),
+                      professor: professorController.text.trim(),
+                      room: roomController.text.trim(),
+                    ),
+                  );
+                });
+
+                Navigator.pop(dialogContext);
+              },
+              child: const Text("Add"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  InputDecoration _inputDecoration(
+    IconData icon,
+    String hintText,
+  ) {
+    return InputDecoration(
+      prefixIcon: Icon(icon),
+      hintText: hintText,
+      filled: true,
+      fillColor: const Color(0xFFF8F3FA),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(5),
+        borderSide: const BorderSide(
+          color: Color(0xFFAA4A50),
+        ),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(5),
+        borderSide: const BorderSide(
+          color: Colors.indigo,
+          width: 2,
+        ),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(5),
+        borderSide: const BorderSide(
+          color: Color(0xFFAA4A50),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildScheduleList() {
+    if (selectedDay == null ||
+        schedules[selectedDay!]!.isEmpty) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(
+          vertical: 50,
+          horizontal: 20,
+        ),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: const Column(
+          children: [
+            Icon(
+              Icons.calendar_month_outlined,
+              size: 65,
+              color: Colors.indigo,
+            ),
+            SizedBox(height: 15),
+            Text(
+              "No schedules yet",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 8),
+            Text(
+              "Add your first subject for this day.",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.grey,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Column(
+      children: schedules[selectedDay!]!.map((schedule) {
+        return Container(
+          margin: const EdgeInsets.only(bottom: 10),
+          decoration: BoxDecoration(
+            color: const Color(0xFFF8F3FA),
+            borderRadius: BorderRadius.circular(15),
+            boxShadow: const [
+              BoxShadow(
+                color: Colors.black12,
+                blurRadius: 3,
+                offset: Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Theme(
+            data: Theme.of(context).copyWith(
+              dividerColor: Colors.transparent,
+            ),
+            child: ExpansionTile(
+              leading: const Icon(
+                Icons.assignment,
+                color: Colors.indigo,
+              ),
+              title: Text(
+                schedule.subject,
+                style: const TextStyle(
+                  fontSize: 18,
+                ),
+              ),
+              subtitle: Text(
+                schedule.time,
+                style: const TextStyle(
+                  fontSize: 16,
+                ),
+              ),
+              iconColor: Colors.indigo,
+              collapsedIconColor: Colors.black54,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    25,
+                    0,
+                    25,
+                    16,
+                  ),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.person,
+                            color: Colors.black54,
+                          ),
+                          const SizedBox(width: 18),
+                          Text(
+                            schedule.professor,
+                            style: const TextStyle(
+                              fontSize: 17,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.location_on,
+                            color: Colors.black54,
+                          ),
+                          const SizedBox(width: 18),
+                          Text(
+                            schedule.room,
+                            style: const TextStyle(
+                              fontSize: 17,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      drawer: const Drawer(),
+
+      appBar: AppBar(
+        title: const Text("Student Information"),
+        centerTitle: true,
+        backgroundColor: Colors.indigo,
+        foregroundColor: Colors.white,
+      ),
+
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.indigo,
+        foregroundColor: Colors.white,
+        onPressed: _addSchedule,
+        child: const Icon(Icons.add),
+      ),
+
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Card(
+              elevation: 4,
+              margin: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+
+                child: Row(
+                  children: [
+                    const CircleAvatar(
+                      radius: 35,
+                      backgroundColor: Color(0xFFE1EAFF),
+                      child: Icon(
+                        Icons.person,
+                        size: 40,
+                        color: Colors.indigo,
+                      ),
+                    ),
+
+                    const SizedBox(width: 20),
+
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment:
+                            CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Jovince Wyeth R. Saria",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 5),
+                          Text(
+                            "3G-G2",
+                            style: TextStyle(
+                              color: Colors.grey,
+                            ),
+                          ),
+                          SizedBox(height: 5),
+                          Text(
+                            "3rd Year",
+                            style: TextStyle(
+                              color: Colors.indigo,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 30),
+
+            Row(
+              mainAxisAlignment:
+                  MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  "My Schedule",
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+
+                DropdownButton<String>(
+                  value: selectedDay,
+                  underline: const SizedBox(),
+                  hint: const Text("Select Day"),
+                  items: const [
+                    DropdownMenuItem(
+                      value: "Monday",
+                      child: Text("Monday"),
+                    ),
+                    DropdownMenuItem(
+                      value: "Tuesday",
+                      child: Text("Tuesday"),
+                    ),
+                    DropdownMenuItem(
+                      value: "Wednesday",
+                      child: Text("Wednesday"),
+                    ),
+                    DropdownMenuItem(
+                      value: "Thursday",
+                      child: Text("Thursday"),
+                    ),
+                    DropdownMenuItem(
+                      value: "Friday",
+                      child: Text("Friday"),
+                    ),
+                  ],
+                  onChanged: (value) {
+                    setState(() {
+                      selectedDay = value;
+                    });
+                  },
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 20),
+
+            _buildScheduleList(),
+          ],
+        ),
+      ),
+    );
+  }
+}

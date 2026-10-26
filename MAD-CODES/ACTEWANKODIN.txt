@@ -1,0 +1,86 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false, // tanggalin yung debug banner
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text("Student Profile"),
+          centerTitle: true,
+          backgroundColor: Colors.green,
+          foregroundColor: Colors.white,
+          leading: const Icon(Icons.menu),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.search_outlined),
+              onPressed: () {},
+            ),
+            IconButton(
+              icon: const Icon(Icons.settings),
+              onPressed: () {},
+            ),
+          ],
+        ),
+
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [
+              CircleAvatar(
+                radius: 70,
+                child: Icon(Icons.person_3, size: 70),
+              ),
+              SizedBox(height: 20),
+              Text(
+                "Jovince Wyeth R. Saria",
+                style: TextStyle(fontSize: 30),
+              ),
+              Text(
+                "BS Information Technology",
+                style: TextStyle(fontSize: 15),
+              ),
+              Text(
+                "3rd Year",
+                style: TextStyle(fontSize: 15),
+              ),
+              Text(
+                "ABC College",
+                style: TextStyle(fontSize: 15),
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: null, // disabled for now
+                child: Text("View Profile"),
+              ),
+            ],
+          ),
+        ),
+
+        bottomNavigationBar: NavigationBar(
+          destinations: const [
+            NavigationDestination(
+              icon: Icon(Icons.home),
+              label: "Home",
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.book),
+              label: "Subjects",
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.person),
+              label: "Profile",
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

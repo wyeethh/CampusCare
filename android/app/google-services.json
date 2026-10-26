@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "860991388671",
+    "project_id": "campuscare-21b19",
+    "storage_bucket": "campuscare-21b19.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:860991388671:android:76518a6a931fd11cfc45ca",
+        "android_client_info": {
+          "package_name": "com.example.campuscare"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDa9RWUB0_N8CE8is9mJIkrZusf9YNGqIk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:860991388671:android:ddd8b8186385660bfc45ca",
+        "android_client_info": {
+          "package_name": "com.example.campuscare_draft1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDa9RWUB0_N8CE8is9mJIkrZusf9YNGqIk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:860991388671:android:db5660a353890602fc45ca",
+        "android_client_info": {
+          "package_name": "com.example.campuscare_sample"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDa9RWUB0_N8CE8is9mJIkrZusf9YNGqIk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

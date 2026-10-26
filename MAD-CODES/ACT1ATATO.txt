@@ -1,0 +1,655 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  static const Color primary = Color(0xFF0F766E);
+  static const Color secondary = Color(0xFF14B8A6);
+  static const Color lightBg = Color(0xFFF4FAF9);
+  static const Color darkBg = Color(0xFF101817);
+
+  final GlobalKey<ScaffoldMessengerState> messengerKey =
+      GlobalKey<ScaffoldMessengerState>();
+
+  bool isLightMode = true;
+  List<String> assignments = [
+    "Assignment 1",
+    "Assignment 2",
+    "Assignment 3",
+  ];
+  List<bool> reminders = [true, false, true];
+  String selectedDay = "Monday";
+  int selectedIndex = 0;
+
+  final List<Map<String, String>> schedules = [
+    {
+      "day": "Monday",
+      "subject": "Entrepreneurial Mind",
+      "time": "1:00 PM - 4:00 PM",
+      "teacher": "Ma'am Jennet Natividad",
+      "room": "Pimentel Hall CT 7",
+    },
+    {
+      "day": "Tuesday",
+      "subject": "System Analysis and Design",
+      "time": "7:00 AM - 10:00 AM",
+      "teacher": "Mr. Mark Rafael Carlos",
+      "room": "Google Meet",
+    },
+    {
+      "day": "Tuesday",
+      "subject": "App Dev & Emerging Tech",
+      "time": "11:00 AM - 2:00 PM",
+      "teacher": "Ma'am Jane Suarez",
+      "room": "MS Teams",
+    },
+    {
+      "day": "Tuesday",
+      "subject": "Systems Integration & Arch",
+      "time": "2:00 PM - 4:00 PM",
+      "teacher": "Ma'am Evangelin Gonzalez",
+      "room": "MS Teams",
+    },
+    {
+      "day": "Wednesday",
+      "subject": "System Analysis and Design",
+      "time": "8:00 AM - 10:00 AM",
+      "teacher": "Mr. Mark Rafael Carlos",
+      "room": "Google Meet",
+    },
+    {
+      "day": "Wednesday",
+      "subject": "App Dev & Emerging Tech",
+      "time": "10:00 AM - 12:00 PM",
+      "teacher": "Ma'am Jane Suarez",
+      "room": "MS Teams",
+    },
+    {
+      "day": "Wednesday",
+      "subject": "WMAD Specialization 2",
+      "time": "2:00 PM - 4:00 PM",
+      "teacher": "Mr. Alex Caparas",
+      "room": "MS Teams",
+    },
+    {
+      "day": "Thursday",
+      "subject": "Systems Integration & Arch",
+      "time": "7:00 AM - 10:00 AM",
+      "teacher": "Ma'am Evangelin Gonzalez",
+      "room": "Pimentel Hall A2",
+    },
+    {
+      "day": "Thursday",
+      "subject": "WMAD Specialization 2",
+      "time": "10:00 AM - 1:00 PM",
+      "teacher": "Mr. Alex Caparas",
+      "room": "Pimentel Hall SDL 4",
+    },
+    {
+      "day": "Thursday",
+      "subject": "WMAD Specialization 1",
+      "time": "2:00 PM - 5:00 PM",
+      "teacher": "Mr. Mark Rafael Carlos",
+      "room": "Pimentel Hall A3",
+    },
+    {
+      "day": "Thursday",
+      "subject": "WMAD Specialization 3",
+      "time": "5:00 PM - 8:00 PM",
+      "teacher": "Mr. Adrian James de Jesus",
+      "room": "Pimentel Hall SDL 2",
+    },
+    {
+      "day": "Friday",
+      "subject": "WMAD Specialization 1",
+      "time": "7:00 AM - 9:00 AM",
+      "teacher": "Mr. Mark Rafael Carlos",
+      "room": "Google Meet",
+    },
+    {
+      "day": "Friday",
+      "subject": "WMAD Specialization 3",
+      "time": "9:00 AM - 11:00 AM",
+      "teacher": "Mr. Adrian James de Jesus",
+      "room": "MS Teams",
+    },
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: "Student Profile",
+      scaffoldMessengerKey: messengerKey,
+      theme: ThemeData(
+        useMaterial3: true,
+        brightness: Brightness.light,
+        colorSchemeSeed: primary,
+        scaffoldBackgroundColor: lightBg,
+      ),
+      darkTheme: ThemeData(
+        useMaterial3: true,
+        brightness: Brightness.dark,
+        colorSchemeSeed: primary,
+        scaffoldBackgroundColor: darkBg,
+      ),
+      themeMode: isLightMode ? ThemeMode.light : ThemeMode.dark,
+      home: _buildHome(),
+    );
+  }
+
+  Widget _buildHome() {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          "Student Profile",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+        backgroundColor: primary,
+        foregroundColor: Colors.white,
+        actions: [
+          IconButton(
+            onPressed: () {
+              setState(() {
+                isLightMode = !isLightMode;
+              });
+            },
+            icon: Icon(
+              isLightMode ? Icons.dark_mode : Icons.light_mode,
+            ),
+          ),
+        ],
+      ),
+      body: _buildBody(),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: selectedIndex,
+        onDestinationSelected: (index) {
+          setState(() {
+            selectedIndex = index;
+          });
+        },
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.home_outlined),
+            selectedIcon: Icon(Icons.home),
+            label: "Home",
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outline),
+            selectedIcon: Icon(Icons.person),
+            label: "Profile",
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.settings_outlined),
+            selectedIcon: Icon(Icons.settings),
+            label: "Settings",
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBody() {
+    if (selectedIndex == 1) {
+      return _buildProfile();
+    }
+
+    if (selectedIndex == 2) {
+      return _buildSettings();
+    }
+
+    return _buildDashboard();
+  }
+
+  Widget _buildDashboard() {
+    final daySchedules =
+        schedules.where((s) => s["day"] == selectedDay).toList();
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildStudentCard(),
+
+          const SizedBox(height: 20),
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                "Assignments",
+                style: TextStyle(
+                  fontSize: 21,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              FloatingActionButton.small(
+                backgroundColor: primary,
+                foregroundColor: Colors.white,
+                onPressed: () {
+                  setState(() {
+                    assignments.add(
+                      "Assignment ${assignments.length + 1}",
+                    );
+                    reminders.add(false);
+                  });
+                },
+                child: const Icon(Icons.add),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 8),
+
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: assignments.length,
+            itemBuilder: (context, index) {
+              return Card(
+                margin: const EdgeInsets.only(bottom: 8),
+                child: CheckboxListTile(
+                  value: reminders[index],
+                  onChanged: (value) {
+                    setState(() {
+                      reminders[index] = value ?? false;
+                    });
+                  },
+                  secondary: Icon(
+                    reminders[index]
+                        ? Icons.check_circle
+                        : Icons.assignment,
+                    color: reminders[index] ? Colors.green : primary,
+                  ),
+                  title: Text(assignments[index]),
+                ),
+              );
+            },
+          ),
+
+          const SizedBox(height: 20),
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                "Schedule",
+                style: TextStyle(
+                  fontSize: 21,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Container(
+                width: 125,
+                height: 45,
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? const Color(0xFF1E2928)
+                      : Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white24
+                        : Colors.black12,
+                  ),
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    value: selectedDay,
+                    isExpanded: true,
+                    style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black87,
+                      fontSize: 14,
+                    ),
+                    dropdownColor:
+                        Theme.of(context).brightness == Brightness.dark
+                            ? const Color(0xFF1E2928)
+                            : Colors.white,
+                    icon: Icon(
+                      Icons.arrow_drop_down,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white70
+                          : Colors.black54,
+                    ),
+                    items: const [
+                      DropdownMenuItem(
+                        value: "Monday",
+                        child: Text("Monday"),
+                      ),
+                      DropdownMenuItem(
+                        value: "Tuesday",
+                        child: Text("Tuesday"),
+                      ),
+                      DropdownMenuItem(
+                        value: "Wednesday",
+                        child: Text("Wednesday"),
+                      ),
+                      DropdownMenuItem(
+                        value: "Thursday",
+                        child: Text("Thursday"),
+                      ),
+                      DropdownMenuItem(
+                        value: "Friday",
+                        child: Text("Friday"),
+                      ),
+                    ],
+                    onChanged: (value) {
+                      if (value == null) return;
+                      setState(() {
+                        selectedDay = value;
+                      });
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 15),
+
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: daySchedules.length,
+            itemBuilder: (context, index) {
+              final schedule = daySchedules[index];
+
+              return Card(
+                margin: const EdgeInsets.only(bottom: 8),
+                child: ExpansionTile(
+                  leading: CircleAvatar(
+                    backgroundColor: primary,
+                    child: const Icon(
+                      Icons.laptop,
+                      color: Colors.white,
+                    ),
+                  ),
+                  title: Text(schedule["subject"]!),
+                  subtitle: Text(schedule["time"]!),
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.person),
+                      title: const Text("Instructor"),
+                      subtitle: Text(schedule["teacher"]!),
+                    ),
+                    ListTile(
+                      leading: const Icon(
+                        Icons.location_on,
+                        color: Colors.red,
+                      ),
+                      title: const Text("Room"),
+                      subtitle: Text(schedule["room"]!),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+
+          const SizedBox(height: 15),
+
+          const SizedBox(height: 20),
+
+          const Text(
+            "Announcements",
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+
+          const SizedBox(height: 10),
+
+          SizedBox(
+            height: 160,
+            child: PageView(
+              children: [
+                _announcementCard(
+                  title: "Activity 1",
+                  message:
+                      "Please submit your Student Dashboard activity before the deadline.",
+                  icon: Icons.assignment,
+                  color: Colors.blue,
+                ),
+                _announcementCard(
+                  title: "Midterm Exam",
+                  message:
+                      "Midterm Examination will be on August 31, 2026.",
+                  icon: Icons.campaign,
+                  color: Colors.orange,
+                ),
+                _announcementCard(
+                  title: "Reminder",
+                  message:
+                      "Check your assignments and complete pending activities.",
+                  icon: Icons.notifications,
+                  color: Colors.green,
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 20),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStudentCard() {
+    return Card(
+      elevation: 4,
+      color: primary,
+      child: Padding(
+        padding: const EdgeInsets.all(15),
+        child: Row(
+          children: [
+            const CircleAvatar(
+              radius: 35,
+              backgroundColor: Colors.white,
+              child: Icon(
+                Icons.person,
+                color: primary,
+                size: 35,
+              ),
+            ),
+            const SizedBox(width: 12),
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Jovince Wyeth R. Saria",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  SizedBox(height: 3),
+                  Text(
+                    "Section: BSIT 3I - G2",
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.white,
+                    ),
+                  ),
+                  Text(
+                    "Year Level: 3rd Year",
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _announcementCard({
+    required String title,
+    required String message,
+    required IconData icon,
+    required Color color,
+  }) {
+    return Card(
+      color: color,
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              color: Colors.white,
+              size: 40,
+            ),
+            const SizedBox(width: 15),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    message,
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProfile() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          const SizedBox(height: 20),
+          const CircleAvatar(
+            radius: 50,
+            backgroundColor: primary,
+            child: Icon(
+              Icons.person,
+              color: Colors.white,
+              size: 55,
+            ),
+          ),
+          const SizedBox(height: 15),
+          const Text(
+            "Jovince Wyeth R. Saria",
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 5),
+          const Text("BSIT 3I - G2"),
+          const SizedBox(height: 25),
+          Card(
+            child: Column(
+              children: const [
+                ListTile(
+                  leading: Icon(Icons.school, color: primary),
+                  title: Text("Program"),
+                  subtitle: Text(
+                    "Bachelor of Science in Information Technology",
+                  ),
+                ),
+                ListTile(
+                  leading: Icon(Icons.calendar_today, color: primary),
+                  title: Text("Year Level"),
+                  subtitle: Text("3rd Year"),
+                ),
+                ListTile(
+                  leading: Icon(Icons.groups, color: primary),
+                  title: Text("Section"),
+                  subtitle: Text("BSIT 3I - G2"),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSettings() {
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        const SizedBox(height: 10),
+        Card(
+          child: Column(
+            children: [
+              SwitchListTile(
+                value: !isLightMode,
+                onChanged: (value) {
+                  setState(() {
+                    isLightMode = !value;
+                  });
+                },
+                secondary: const Icon(Icons.dark_mode),
+                title: const Text("Dark Mode"),
+                subtitle: const Text("Change the app appearance"),
+              ),
+              const Divider(height: 1),
+              ListTile(
+                leading: const Icon(Icons.notifications),
+                title: const Text("Notifications"),
+                subtitle: const Text("Assignment and class reminders"),
+                onTap: () {
+                  messengerKey.currentState?.showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        "Notification settings are coming soon.",
+                      ),
+                    ),
+                  );
+                },
+              ),
+              const Divider(height: 1),
+              const ListTile(
+                leading: Icon(Icons.info_outline),
+                title: Text("About"),
+                subtitle: Text("Student Dashboard v1.0"),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+}
